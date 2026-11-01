@@ -1,0 +1,47 @@
+{
+  "registro_id": "b7d8e9f0-1234-5678-9abc-def012345678",
+  "fecha_registro": "2026-09-01T08:00:00Z",
+  "estudiante": {
+    "matricula": "213000",
+    "tipo_ingreso": "nuevo_ingreso",
+    "detalles_academicos": {
+      "carrera": "IT2iD",
+      "modalidad": "presencial",
+      "campus": "Suchiapa"
+    }
+  },
+  "materias": [
+    {
+      "clave": "IT201",
+      "nombre": "Bases de Datos en la Nube",
+      "creditos": 4,
+      "horas_semana": 6,
+      "calificacion": 9.5
+    },
+    {
+      "clave": "IT202",
+      "nombre": "Desarrollo Full-Stack",
+      "creditos": 5,
+      "horas_semana": 8,
+      "calificacion": 10.0
+    },
+    {
+      "clave": "IT203",
+      "nombre": "Ingeniería de Software",
+      "creditos": 4,
+      "horas_semana": 5,
+      "calificacion": 9.0
+    }
+  ],
+  "cuatrimestre_info": {
+    "periodo": "Sep-Dic 2026",
+    "estado": "activo",
+    "promedio_general": 9.5,
+    "total_creditos": 13
+  },
+  "auditoria": {
+    "plataforma": "mindstack_app",
+    "ip_registro": "192.168.1.100",
+    "tags": ["cuadro_honor", "regular"]
+  }
+}

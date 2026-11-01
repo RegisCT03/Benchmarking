@@ -1,0 +1,36 @@
+# ============================================================
+#  .gitignore — Experimento Benchmark MongoDB vs PostgreSQL
+# ============================================================
+
+# Secretos y configuración local
+.env
+
+# Dataset (demasiado grande para git, generarlo con synthetic_data_generator.py)
+data/
+*.jsonl
+
+# Entorno virtual Python
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+
+# Reporte final (se entrega por separado como PDF)
+reporte/reporte_tecnico_final.md
+reporte/reporte_tecnico_final.pdf
+
+# Resultados del benchmark (se generan al correr el experimento)
+results_mongo.csv
+results_postgres.csv
+results_final.csv
+results_preliminar.csv
+
+# Archivos temporales de sistema
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Caché de Python
+*.egg-info/
+dist/
+build/

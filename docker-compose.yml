@@ -1,0 +1,108 @@
+services:
+  # ==========================================================
+  # STACK DE TELEMETRÍA Y OBSERVABILIDAD (cgroups v2 & Host)
+  # ==========================================================
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:latest
+    container_name: benchmark-cadvisor
+    privileged: true
+    devices:
+      - /dev/kmsg:/dev/kmsg
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+    networks:
+      - benchmark-net
+
+  node-exporter:
+    image: prom/node-exporter:latest
+    container_name: benchmark-node-exporter
+    ports:
+      - "9100:9100"
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.sysfs=/host/sys'
+      - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
+    restart: unless-stopped
+    networks:
+      - benchmark-net
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: benchmark-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=15d'
+      - '--web.enable-lifecycle'
+    depends_on:
+      - cadvisor
+      - node-exporter
+    restart: unless-stopped
+    networks:
+      - benchmark-net
+
+  # ==========================================================
+  # MOTORES DE BASES DE DATOS OBJETIVO
+  # ==========================================================
+  mongodb:
+    image: mongo:latest
+    container_name: benchmark-mongodb
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_DATABASE=${MONGO_INITDB_DATABASE:-it2id_universidad}
+    volumes:
+      - mongo_data:/data/db
+    deploy:
+      resources:
+        limits:
+          cpus: '${DB_CPUS:-4.0}'
+          memory: '${DB_MEMORY:-4096M}'
+    restart: unless-stopped
+    networks:
+      - benchmark-net
+
+  postgres:
+    image: postgres:17
+    container_name: benchmark-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER:-benchmark}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-benchmark_password}
+      - POSTGRES_DB=${POSTGRES_DB:-it2id_universidad}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    deploy:
+      resources:
+        limits:
+          cpus: '${DB_CPUS:-4.0}'
+          memory: '${DB_MEMORY:-4096M}'
+    restart: unless-stopped
+    networks:
+      - benchmark-net
+
+networks:
+  benchmark-net:
+    driver: bridge
+
+volumes:
+  prometheus_data:
+  mongo_data:
+  postgres_data:
